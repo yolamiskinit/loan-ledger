@@ -1,0 +1,411 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0b6e5f">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Loan Ledger">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<title>Yolamiskinit Loan Ledger</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+:root{
+  --bg:#f1f4f3; --surface:#ffffff; --surface2:#e9eeec; --ink:#14201e; --muted:#5a6a66; --line:#d9e1de;
+  --accent:#0b6e5f; --accent-ink:#ffffff; --accent-soft:#dff0ec;
+  --out:#a3530b; --out-soft:#f8ead9; --bad:#b3261e; --bad-soft:#fbe4e1;
+  --sans:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+  color-scheme:light;
+}
+@media (prefers-color-scheme: dark){
+  :root{
+    --bg:#0f1514; --surface:#18201f; --surface2:#222c2a; --ink:#e8efed; --muted:#9bacA8; --line:#2b3633;
+    --accent:#47b8a4; --accent-ink:#06201b; --accent-soft:#17332e;
+    --out:#f0a24c; --out-soft:#3a2a14; --bad:#ff8077; --bad-soft:#3d1c19;
+    color-scheme:dark;
+  }
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--bg);color:var(--ink);font:15px/1.45 var(--sans);padding:env(safe-area-inset-top,0px) max(16px,env(safe-area-inset-right,0px)) 0 max(16px,env(safe-area-inset-left,0px))}
+.wrap{max-width:720px;margin:0 auto;padding-block:20px 120px}
+h1{font-size:15px;font-weight:600;margin:0;letter-spacing:.01em}
+.top{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:14px}
+.top small{color:var(--muted);font-size:12px}
+.hero{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:16px 18px;margin-bottom:12px}
+.hero .lab{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.07em}
+.hero .big{font:600 34px/1.15 var(--mono);color:var(--accent);margin:2px 0 4px;font-variant-numeric:tabular-nums}
+.hero .big.neg{color:var(--bad)}
+.hero .sub{color:var(--muted);font-size:13px}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:14px}
+.stat{background:var(--surface2);border-radius:10px;padding:8px 10px}
+.stat .k{font-size:11px;color:var(--muted)}
+.stat .v{font:500 14px var(--mono);font-variant-numeric:tabular-nums}
+.stat .v.warn{color:var(--out)}
+.note{border-radius:12px;padding:10px 14px;margin-bottom:10px;font-size:13px;border:1px solid var(--line);background:var(--surface)}
+.note.bad{background:var(--bad-soft);border-color:var(--bad)}
+.note.info{background:var(--out-soft);border-color:var(--out)}
+.note button{margin-top:8px;min-height:36px;padding:6px 12px}
+.tools{display:flex;gap:8px;margin:14px 0 8px}
+.tools input{flex:1}
+input,select,textarea,button{font:inherit;color:var(--ink)}
+input,select,textarea{width:100%;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:11px 12px;min-height:44px}
+textarea{min-height:68px;resize:vertical}
+input:focus-visible,select:focus-visible,textarea:focus-visible,button:focus-visible,label.btn:focus-within{outline:2px solid var(--accent);outline-offset:1px}
+button,label.btn{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:10px 14px;min-height:44px;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:6px;font-weight:500}
+button.primary{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+button.ghost{border-color:transparent;background:none;color:var(--accent);padding-inline:8px;min-height:36px}
+button.danger{color:var(--bad)}
+.chips{display:flex;gap:6px;overflow-x:auto;padding-bottom:6px;margin-bottom:6px;scrollbar-width:none}
+.chips button{min-height:36px;padding:6px 12px;border-radius:999px;white-space:nowrap;font-size:13px}
+.chips button[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.list{display:flex;flex-direction:column;gap:10px}
+.entry{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:13px 14px}
+.entry.tocheck{border-left:4px solid var(--out)}
+.row1{display:flex;justify-content:space-between;gap:12px;align-items:flex-start}
+.desc{font-weight:500;overflow-wrap:anywhere}
+.amt{font:600 16px var(--mono);white-space:nowrap;font-variant-numeric:tabular-nums}
+.amt.in{color:var(--accent)} .amt.outc{color:var(--out)}
+.meta{display:flex;flex-wrap:wrap;gap:4px 10px;color:var(--muted);font-size:12.5px;margin-top:4px}
+.meta .bal{font-family:var(--mono);font-variant-numeric:tabular-nums}
+.tag{font-size:11.5px;border-radius:999px;padding:1px 8px;background:var(--accent-soft);color:var(--accent);font-weight:500}
+.tag.outc{background:var(--out-soft);color:var(--out)}
+.ngn{font:12.5px var(--mono);color:var(--muted);margin-top:3px}
+.nt{font-size:13px;color:var(--muted);margin-top:6px;overflow-wrap:anywhere}
+.proof{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:10px}
+.thumb{width:52px;height:52px;border-radius:8px;border:1px solid var(--line);background:var(--surface2);object-fit:cover;cursor:pointer;display:grid;place-items:center;font-size:11px;color:var(--muted);overflow:hidden;padding:0}
+.noproof{color:var(--bad);font-size:12.5px;font-weight:500}
+.acts{display:flex;gap:2px;margin-top:6px;align-items:center;justify-content:space-between;flex-wrap:wrap}
+.acts label.btn{min-height:36px;padding:4px 12px;font-size:13px;color:var(--accent)}
+.acts label.btn input{display:none}
+.chk{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--muted)}
+.chk input{width:20px;height:20px;min-height:0;accent-color:var(--accent)}
+.empty{background:var(--surface);border:1px dashed var(--line);border-radius:14px;padding:28px 20px;text-align:center;color:var(--muted)}
+.empty b{color:var(--ink);display:block;margin-bottom:4px}
+.bar{position:fixed;inset-inline:0;bottom:0;background:linear-gradient(transparent,var(--bg) 35%);padding:18px 16px calc(14px + env(safe-area-inset-bottom,0px));display:flex;justify-content:center}
+.bar .in{width:100%;max-width:720px;display:flex;gap:8px}
+.bar .primary{flex:1;min-height:50px;font-size:16px}
+dialog{border:1px solid var(--line);border-radius:18px;background:var(--surface);color:var(--ink);padding:0;width:min(560px,calc(100vw - 20px));max-height:92vh;overflow:auto}
+dialog::backdrop{background:rgba(0,0,0,.5)}
+.sheet{padding:18px}
+.sheet h2{margin:0 0 12px;font-size:17px}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.f{margin-bottom:10px}
+.f label.l{display:block;font-size:12px;color:var(--muted);margin-bottom:4px}
+.hint{font-size:12px;color:var(--muted);margin-top:3px}
+.hint.warn{color:var(--bad)}
+.sheet .acts2{display:flex;gap:8px;justify-content:flex-end;margin-top:14px}
+.sheet .acts2 button,.sheet .acts2 label.btn{flex:1}
+#viewer img{max-width:100%;max-height:68vh;display:block;margin:0 auto;border-radius:8px}
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(86px + env(safe-area-inset-bottom,0px));background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:999px;font-size:13px;z-index:10;max-width:90vw}
+@media (prefers-reduced-motion:no-preference){.entry{transition:border-color .15s}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top"><div><h1>Yolamiskinit Limited · Director's loan</h1><small>What you and the company owe each other</small></div>
+    <button class="ghost" id="menuBtn" aria-label="Backup and export">Backup</button></div>
+
+  <section class="hero" aria-live="polite">
+    <div class="lab" id="heroLab">Company owes you</div>
+    <div class="big" id="heroBig">£0.00</div>
+    <div class="sub" id="heroSub">Loading…</div>
+    <div class="stats">
+      <div class="stat"><div class="k">You put in</div><div class="v" id="stIn">£0</div></div>
+      <div class="stat"><div class="k">Sent / repaid</div><div class="v" id="stOut">£0</div></div>
+      <div class="stat"><div class="k">No proof yet</div><div class="v" id="stNoProof">0</div></div>
+    </div>
+  </section>
+
+  <div id="notes"></div>
+
+  <div class="tools"><input id="search" type="search" placeholder="Search entries" aria-label="Search entries"></div>
+  <div class="chips" id="chips" role="group" aria-label="Filter entries"></div>
+  <div class="list" id="list"></div>
+</div>
+
+<div class="bar"><div class="in"><button class="primary" id="addBtn">+ Add entry</button></div></div>
+
+<dialog id="dlg"><form class="sheet" id="form" method="dialog">
+  <h2 id="dlgTitle">Add entry</h2>
+  <div class="g2">
+    <div class="f"><label class="l" for="fDate">Date</label><input type="date" id="fDate" required></div>
+    <div class="f"><label class="l" for="fAmount">Amount in £</label><input type="number" inputmode="decimal" step="0.01" min="0" id="fAmount" required></div>
+  </div>
+  <div class="g2">
+    <div class="f"><label class="l" for="fNgn">Naira sent (₦), if any</label><input type="number" inputmode="decimal" step="1" min="0" id="fNgn" placeholder="e.g. 3676000"></div>
+    <div class="f"><label class="l" for="fRate">Rate (₦ per £1)</label><input type="number" inputmode="decimal" step="0.01" min="0" id="fRate" placeholder="e.g. 1838"></div>
+  </div>
+  <div class="hint" style="margin:-4px 0 10px">Fill any two of £, ₦ and rate and the third works itself out.</div>
+  <div class="f"><label class="l" for="fDesc">What was it for</label><input id="fDesc" required placeholder="e.g. Temu order: cartons and labels"></div>
+  <div class="f"><label class="l" for="fKind">Type</label>
+    <select id="fKind">
+      <option value="in">Paid by me (company owes me)</option>
+      <option value="sent">Company sent me money to buy stock (not personal)</option>
+      <option value="repay">Company repaid my loan</option>
+      <option value="personal">Company money used personally</option>
+    </select></div>
+  <div class="g2">
+    <div class="f"><label class="l" for="fCat">Category</label><select id="fCat"></select></div>
+    <div class="f"><label class="l" for="fPaid">Paid with</label><select id="fPaid"></select></div>
+  </div>
+  <div class="hint warn" id="paidWarn" hidden>Spending on a company card is a company cost. Only record it here if you paid with your own money.</div>
+  <div class="f"><label class="l" for="fNotes">Notes</label><textarea id="fNotes" placeholder="Who paid, anything to check"></textarea></div>
+  <div class="f"><label class="l" for="fFiles">Receipts or screenshots (photo or PDF)</label><input type="file" id="fFiles" multiple accept="image/*,application/pdf"></div>
+  <label class="chk f"><input type="checkbox" id="fChecked"> I have checked this entry is correct</label>
+  <div class="acts2"><button type="button" id="cancelBtn">Cancel</button><button class="primary" id="saveBtn" type="submit">Save</button></div>
+</form></dialog>
+
+<dialog id="viewer"><div class="sheet">
+  <h2 id="vTitle"></h2><div id="vBody"></div>
+  <div class="acts2"><button class="danger" id="vDelete" type="button">Remove file</button><button id="vClose" type="button">Close</button></div>
+</div></dialog>
+
+<dialog id="menu"><div class="sheet">
+  <h2>Backup and export</h2>
+  <p class="hint" style="margin:0 0 12px">Your records are stored only on this phone. Save a backup regularly and keep it somewhere safe, such as Google Drive or OneDrive.</p>
+  <div class="acts2" style="flex-direction:column">
+    <button id="backupBtn" type="button" class="primary">Save full backup (with receipts)</button>
+    <label class="btn">Restore from a backup file<input type="file" id="restoreInput" accept=".json,application/json" hidden></label>
+    <button id="csvBtn" type="button">Save spreadsheet (CSV)</button>
+    <button id="menuClose" type="button">Close</button>
+  </div>
+</div></dialog>
+
+<script>
+const CATS=['Stock','Shipping of goods','Packaging & supplies','Software & subscriptions','Advertising','Equipment','Set-up & registration','Phone & office','Transfer to me','Other'];
+const PAID=['My personal bank account','My personal credit card','Capital One card','Lloyds','Revolut','Apple Pay','Cash','Company card (Tide / Capital on Tap)','Not sure'];
+const KIND={in:'Paid by me',sent:'Sent to me for stock',repay:'Repayment to me',personal:'Personal use'};
+const sign=k=>k==='in'?1:-1;
+const $=id=>document.getElementById(id);
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const gbp=n=>(n<0?'−':'')+'£'+Math.abs(n).toLocaleString('en-GB',{minimumFractionDigits:2,maximumFractionDigits:2});
+const ngn=n=>'₦'+Math.round(n).toLocaleString('en-GB');
+const fmtDate=d=>d?new Date(d+'T00:00:00').toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'}):'';
+const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,8);
+$('fCat').innerHTML=CATS.map(c=>`<option>${esc(c)}</option>`).join('');
+$('fPaid').innerHTML=PAID.map(c=>`<option>${esc(c)}</option>`).join('');
+function toast(m){const t=document.createElement('div');t.className='toast';t.textContent=m;document.body.appendChild(t);setTimeout(()=>t.remove(),2800)}
+
+/* ---------- storage: IndexedDB on this phone ---------- */
+let db=null, memOnly=false; const mem={entries:new Map(),files:new Map()};
+function openDB(){return new Promise((res,rej)=>{const r=indexedDB.open('loan-ledger',1);
+  r.onupgradeneeded=()=>{r.result.createObjectStore('entries',{keyPath:'id'});r.result.createObjectStore('files',{keyPath:'id'})};
+  r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error)})}
+const rq=r=>new Promise((res,rej)=>{r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error)});
+const op=(store,mode,fn,mfn)=>memOnly?Promise.resolve(mfn(mem[store])):rq(fn(db.transaction(store,mode).objectStore(store)));
+const allEntries=()=>op('entries','readonly',s=>s.getAll(),m=>[...m.values()]);
+const putEntry=e=>op('entries','readwrite',s=>s.put(e),m=>m.set(e.id,e));
+const delEntry=id=>op('entries','readwrite',s=>s.delete(id),m=>m.delete(id));
+const getFile=id=>op('files','readonly',s=>s.get(id),m=>m.get(id));
+const putFile=f=>op('files','readwrite',s=>s.put(f),m=>m.set(f.id,f));
+const delFile=id=>op('files','readwrite',s=>s.delete(id),m=>m.delete(id));
+const allFiles=()=>op('files','readonly',s=>s.getAll(),m=>[...m.values()]);
+
+let entries=[], filter='all', lastBackup=null;
+async function refresh(){entries=await allEntries();render()}
+async function init(){
+  try{db=await openDB()}catch(e){memOnly=true;$('notes').innerHTML='<div class="note bad"><b>Not saving.</b> This browser blocked storage. Open the app in normal Chrome or Safari, not a private window.</div>'}
+  try{lastBackup=localStorage.getItem('lb')}catch(e){}
+  try{navigator.storage&&navigator.storage.persist&&navigator.storage.persist()}catch(e){}
+  await refresh();
+}
+
+/* ---------- render ---------- */
+const urlCache=new Map();
+async function fileUrl(id){ if(urlCache.has(id)) return urlCache.get(id); const f=await getFile(id); if(!f) return ''; const u=URL.createObjectURL(f.blob); urlCache.set(id,u); return u }
+function ordered(){return [...entries].sort((a,b)=>(a.date||'').localeCompare(b.date||'')||(a.created||0)-(b.created||0))}
+function renderChips(){
+  const defs=[['all','All'],['noproof','Needs proof'],['tocheck','To check'],['in','Paid by me'],['out','Sent / repaid']];
+  $('chips').innerHTML=defs.map(([k,l])=>`<button type="button" data-f="${k}" aria-pressed="${filter===k}">${l}</button>`).join('');
+}
+function render(){
+  const list=ordered(); let bal=0; const balAt={};
+  for(const e of list){bal+=sign(e.kind)*(e.amount||0); balAt[e.id]=bal}
+  bal=Math.round(bal*100)/100;
+  const put=list.filter(e=>e.kind==='in').reduce((s,e)=>s+(e.amount||0),0);
+  const out=list.filter(e=>e.kind!=='in').reduce((s,e)=>s+(e.amount||0),0);
+  const noProof=list.filter(e=>!(e.files||[]).length).length;
+  const toCheck=list.filter(e=>!e.checked).length;
+  $('heroLab').textContent=bal<0?'You owe the company':'Company owes you';
+  $('heroBig').textContent=gbp(Math.abs(bal)); $('heroBig').classList.toggle('neg',bal<0);
+  $('heroSub').textContent=bal<0?'Overdrawn: you have taken out more than you put in.':list.length?`You can take this back tax-free. ${toCheck} of ${list.length} entries still to check.`:'Add your first entry below.';
+  $('stIn').textContent=gbp(put); $('stOut').textContent=gbp(out);
+  $('stNoProof').textContent=noProof; $('stNoProof').classList.toggle('warn',noProof>0);
+  let n='';
+  if(!memOnly&&list.length){
+    const days=lastBackup?(Date.now()-Number(lastBackup))/864e5:Infinity;
+    if(days>7) n+=`<div class="note info"><b>${lastBackup?'Last backup was '+Math.floor(days)+' days ago.':'No backup yet.'}</b> Your records live only on this phone. A lost phone or cleared browser would erase them.<br><button type="button" id="nBackup">Save a backup now</button></div>`;
+  }
+  if(bal<0) n+=`<div class="note bad"><b>Overdrawn.</b> If this is still owed 9 months and 1 day after the company year-end (31 March), the company pays 25% tax on it. Put money back or reduce it before then.</div>`;
+  if(list.some(e=>e.kind==='sent')) n+=`<div class="note">Money the company sent you to buy stock is not a personal withdrawal. Each transfer is cancelled out by the stock purchase you paid for with it.</div>`;
+  if(list.some(e=>e.date&&e.date<'2026-03-26')) n+=`<div class="note info">Some entries are dated before the company existed (26 Mar 2026). Keep the receipts and ask an accountant to confirm they can be claimed as set-up costs.</div>`;
+  if(!memOnly) $('notes').innerHTML=n;
+  renderChips();
+  const q=$('search').value.trim().toLowerCase();
+  const vis=[...list].reverse().filter(e=>{
+    if(q&&!(`${e.desc} ${e.cat} ${e.notes||''} ${e.paid}`.toLowerCase().includes(q))) return false;
+    if(filter==='noproof'&&(e.files||[]).length) return false;
+    if(filter==='tocheck'&&e.checked) return false;
+    if(filter==='in'&&e.kind!=='in') return false;
+    if(filter==='out'&&e.kind==='in') return false;
+    return true;
+  });
+  if(!vis.length){
+    $('list').innerHTML=list.length?`<div class="empty"><b>Nothing matches</b>Try a different filter or search.</div>`
+      :`<div class="empty"><b>No entries yet</b>Tap “Add entry” each time you pay for the business with your own money, or when the company sends you money or repays you. To load starter entries, open Backup and choose “Restore from a backup file”.</div>`;
+    return;
+  }
+  $('list').innerHTML=vis.map(e=>{
+    const fs=e.files||[];
+    const th=fs.map(f=>f.type&&f.type.startsWith('image/')?`<img class="thumb" data-fid="${esc(f.id)}" alt="${esc(f.name)}" data-view="${esc(f.id)}" data-e="${esc(e.id)}">`:`<button class="thumb" type="button" data-view="${esc(f.id)}" data-e="${esc(e.id)}">PDF</button>`).join('');
+    const plus=sign(e.kind)>0;
+    return `<article class="entry ${e.checked?'':'tocheck'}">
+      <div class="row1"><div class="desc">${esc(e.desc)}</div><div class="amt ${plus?'in':'outc'}">${plus?'+':'−'}${gbp(e.amount||0)}</div></div>
+      <div class="meta"><span>${fmtDate(e.date)}</span><span class="tag ${plus?'':'outc'}">${KIND[e.kind]||''}</span><span>${esc(e.cat)}</span><span>${esc(e.paid)}</span><span class="bal">Balance ${gbp(balAt[e.id])}</span></div>
+      ${e.naira?`<div class="ngn">${ngn(e.naira)} at ${Number(e.rate).toLocaleString('en-GB',{maximumFractionDigits:1})} per £1</div>`:''}
+      ${e.notes?`<div class="nt">${esc(e.notes)}</div>`:''}
+      <div class="proof">${th}${fs.length?'':'<span class="noproof">No proof yet</span>'}</div>
+      <div class="acts">
+        <label class="btn">+ Add photo / PDF<input type="file" multiple accept="image/*,application/pdf" data-up="${esc(e.id)}"></label>
+        <span><button class="ghost" type="button" data-edit="${esc(e.id)}">Edit</button><button class="ghost danger" type="button" data-del="${esc(e.id)}">Delete</button></span>
+      </div>
+      <label class="chk" style="margin-top:4px"><input type="checkbox" data-chk="${esc(e.id)}" ${e.checked?'checked':''}> Checked and correct</label>
+    </article>`}).join('');
+  document.querySelectorAll('img[data-fid]').forEach(async im=>{im.src=await fileUrl(im.dataset.fid)});
+}
+
+/* ---------- files ---------- */
+function compress(file){
+  return new Promise(res=>{
+    if(!file.type.startsWith('image/')||file.type==='image/gif') return res(file);
+    const img=new Image(), url=URL.createObjectURL(file);
+    img.onload=()=>{ const max=1800, s=Math.min(1,max/Math.max(img.width,img.height));
+      if(s===1&&file.size<1.5e6){URL.revokeObjectURL(url);return res(file)}
+      const c=document.createElement('canvas'); c.width=Math.round(img.width*s); c.height=Math.round(img.height*s);
+      c.getContext('2d').drawImage(img,0,0,c.width,c.height); URL.revokeObjectURL(url);
+      c.toBlob(b=>res(b?new File([b],file.name.replace(/\.\w+$/,'')+'.jpg',{type:'image/jpeg'}):file),'image/jpeg',0.82)};
+    img.onerror=()=>{URL.revokeObjectURL(url);res(file)};
+    img.src=url;
+  });
+}
+async function storeFiles(fileList){
+  const out=[];
+  for(const f of fileList){
+    try{ const b=await compress(f); const id=uid(); await putFile({id,name:f.name,type:b.type||f.type||'application/octet-stream',blob:b}); out.push({id,name:f.name,type:b.type||f.type}) }
+    catch(e){ toast('Could not store '+f.name) }
+  }
+  return out;
+}
+let viewing=null;
+async function viewFile(eid,fid){
+  const e=entries.find(x=>x.id===eid); const f=(e?.files||[]).find(x=>x.id===fid); if(!f) return;
+  viewing={eid,f}; $('vTitle').textContent=f.name; const u=await fileUrl(fid);
+  $('vBody').innerHTML=f.type&&f.type.startsWith('image/')?`<img src="${u}" alt="${esc(f.name)}">`:`<a href="${u}" target="_blank" rel="noopener" style="color:var(--accent)">Open ${esc(f.name)}</a>`;
+  $('viewer').showModal();
+}
+
+/* ---------- form ---------- */
+let editing=null;
+function openForm(e){
+  editing=e||null; $('dlgTitle').textContent=e?'Edit entry':'Add entry';
+  $('fDate').value=e?.date||new Date().toISOString().slice(0,10); $('fAmount').value=e?.amount??'';
+  $('fNgn').value=e?.naira??''; $('fRate').value=e?.rate??'';
+  $('fDesc').value=e?.desc||''; $('fKind').value=e?.kind||'in'; $('fCat').value=e?.cat||CATS[0]; $('fPaid').value=e?.paid||PAID[0];
+  $('fNotes').value=e?.notes||''; $('fFiles').value=''; $('fChecked').checked=!!e?.checked; warnPaid();
+  $('dlg').showModal();
+}
+function warnPaid(){ $('paidWarn').hidden=!($('fKind').value==='in'&&$('fPaid').value.startsWith('Company card')) }
+$('fKind').onchange=warnPaid; $('fPaid').onchange=warnPaid;
+const num=id=>{const v=parseFloat($(id).value);return isFinite(v)&&v>0?v:0};
+$('fNgn').oninput=$('fRate').oninput=()=>{ const n=num('fNgn'),r=num('fRate'); if(n&&r) $('fAmount').value=(Math.round(n/r*100)/100).toFixed(2) };
+$('fAmount').oninput=()=>{ const n=num('fNgn'),a=num('fAmount'); if(n&&a) $('fRate').value=(Math.round(n/a*10)/10) };
+$('addBtn').onclick=()=>openForm();
+$('cancelBtn').onclick=()=>$('dlg').close();
+$('form').addEventListener('submit',async ev=>{
+  ev.preventDefault(); const btn=$('saveBtn'); btn.disabled=true; btn.textContent='Saving…';
+  try{
+    const added=$('fFiles').files.length?await storeFiles($('fFiles').files):[];
+    const e={id:editing?.id||uid(),date:$('fDate').value,desc:$('fDesc').value.trim(),kind:$('fKind').value,amount:Math.round(parseFloat($('fAmount').value)*100)/100,
+      naira:num('fNgn')||null,rate:num('fRate')||null,cat:$('fCat').value,paid:$('fPaid').value,notes:$('fNotes').value.trim(),
+      checked:$('fChecked').checked,files:[...(editing?.files||[]),...added],created:editing?.created||Date.now()};
+    await putEntry(e); await refresh(); $('dlg').close(); toast('Saved');
+  }catch(err){ toast('Could not save') }
+  btn.disabled=false; btn.textContent='Save';
+});
+
+/* ---------- events ---------- */
+document.addEventListener('click',async ev=>{
+  if(ev.target.id==='nBackup'){backup();return}
+  const t=ev.target.closest('[data-f],[data-edit],[data-del],[data-view]'); if(!t) return;
+  if(t.dataset.f){filter=t.dataset.f;render()}
+  else if(t.dataset.edit) openForm(entries.find(x=>x.id===t.dataset.edit));
+  else if(t.dataset.view) viewFile(t.dataset.e,t.dataset.view);
+  else if(t.dataset.del){
+    if(!t.dataset.armed){t.dataset.armed='1';t.textContent='Tap again to delete';setTimeout(()=>{if(t.isConnected){delete t.dataset.armed;t.textContent='Delete'}},3000);return}
+    const e=entries.find(x=>x.id===t.dataset.del);
+    await delEntry(e.id); for(const f of e.files||[]) await delFile(f.id); await refresh(); toast('Deleted');
+  }
+});
+document.addEventListener('change',async ev=>{
+  const t=ev.target;
+  if(t.dataset.chk){const e=entries.find(x=>x.id===t.dataset.chk); e.checked=t.checked; await putEntry(e); await refresh()}
+  else if(t.dataset.up){
+    const e=entries.find(x=>x.id===t.dataset.up); const files=[...t.files]; t.value='';
+    toast('Saving…'); const added=await storeFiles(files);
+    if(added.length){ e.files=[...(e.files||[]),...added]; await putEntry(e); await refresh(); toast('Added') }
+  }
+});
+$('search').oninput=render;
+$('vClose').onclick=()=>$('viewer').close();
+$('vDelete').onclick=async()=>{
+  if(!viewing) return; const {eid,f}=viewing; const e=entries.find(x=>x.id===eid);
+  e.files=(e.files||[]).filter(x=>x.id!==f.id); await putEntry(e); await delFile(f.id); urlCache.delete(f.id);
+  viewing=null; $('viewer').close(); await refresh();
+};
+$('menuBtn').onclick=()=>$('menu').showModal(); $('menuClose').onclick=()=>$('menu').close();
+
+/* ---------- backup / restore / export ---------- */
+function download(name,blob){const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),4000)}
+const toData=b=>new Promise(r=>{const fr=new FileReader();fr.onload=()=>r(fr.result);fr.readAsDataURL(b)});
+async function backup(){
+  toast('Preparing backup…');
+  const files=[]; for(const f of await allFiles()) files.push({id:f.id,name:f.name,type:f.type,data:await toData(f.blob)});
+  const data={app:'loan-ledger',version:1,exported:new Date().toISOString(),entries:await allEntries(),files};
+  download('loan-ledger-backup-'+new Date().toISOString().slice(0,10)+'.json',new Blob([JSON.stringify(data)],{type:'application/json'}));
+  try{localStorage.setItem('lb',String(Date.now()));lastBackup=String(Date.now())}catch(e){}
+  $('menu').close(); render();
+}
+$('backupBtn').onclick=backup;
+$('restoreInput').onchange=async ev=>{
+  const file=ev.target.files[0]; if(!file) return;
+  try{
+    const data=JSON.parse(await file.text()); if(!Array.isArray(data.entries)) throw new Error('This is not a ledger backup file.');
+    const has=entries.length>0;
+    if(has&&!confirm('Restore this file? It will replace everything currently in the app.')){ev.target.value='';return}
+    for(const e of await allEntries()) await delEntry(e.id);
+    for(const f of await allFiles()) await delFile(f.id);
+    for(const e of data.entries) await putEntry(e);
+    for(const f of data.files||[]){ const blob=await (await fetch(f.data)).blob(); await putFile({id:f.id,name:f.name,type:f.type,blob}) }
+    urlCache.clear(); await refresh(); $('menu').close(); toast('Restored '+data.entries.length+' entries');
+  }catch(err){ toast(err.message||'Could not restore') }
+  ev.target.value='';
+};
+$('csvBtn').onclick=()=>{
+  let bal=0; const rows=[['Date','Description','Type','Amount GBP','Running balance GBP','Naira','Rate NGN per GBP','Category','Paid with','Notes','Checked','Proof files']];
+  for(const e of ordered()){ bal+=sign(e.kind)*e.amount; rows.push([e.date,e.desc,KIND[e.kind],(sign(e.kind)*e.amount).toFixed(2),bal.toFixed(2),e.naira||'',e.rate||'',e.cat,e.paid,e.notes||'',e.checked?'yes':'no',(e.files||[]).map(f=>f.name).join('; ')]) }
+  download('director-loan-ledger.csv',new Blob(['﻿'+rows.map(r=>r.map(c=>`"${String(c).replace(/"/g,'""')}"`).join(',')).join('\r\n')],{type:'text/csv'}));
+  $('menu').close();
+};
+
+if('serviceWorker' in navigator) window.addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));
+renderChips(); init();
+</script>
+</body>
+</html>

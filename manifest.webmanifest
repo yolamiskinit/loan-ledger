@@ -1,0 +1,16 @@
+{
+  "name": "Yolamiskinit Loan Ledger",
+  "short_name": "Loan Ledger",
+  "description": "Tracks money between you and your company, with receipts.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#f1f4f3",
+  "theme_color": "#0b6e5f",
+  "icons": [
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}
